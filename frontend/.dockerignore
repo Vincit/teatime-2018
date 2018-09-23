@@ -1,0 +1,7 @@
+.git
+.vscode
+node_modules
+dist
+README.MD
+vue.config.js
+gateway

@@ -1,0 +1,16 @@
+{
+  "name": "gateway",
+  "version": "1.0.0",
+  "description": "Gateway for chat",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^1.11.2",
+    "fastify-ws": "^1.0.0",
+    "node-reconnect-ws": "^0.2.5"
+  }
+}
