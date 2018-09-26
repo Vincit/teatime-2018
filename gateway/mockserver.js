@@ -19,6 +19,12 @@ const handleMessage = (msg, socket) => {
   }
 }
 
+['SIGINT', 'SIGTERM'].forEach(signal => {
+  process.once(signal, () => {
+    fastify.close();
+  })
+})
+
 // Run the server!
 const start = async () => {
   try {
@@ -27,7 +33,7 @@ const start = async () => {
     fastify.ws
     .on('connection', socket => {
       fastify.log.info('Client connected.')
-      socket.on('message', msg => handleMessage(msg, socket)) 
+      socket.on('message', msg => handleMessage(msg, socket))
       socket.on('close', () => fastify.log.info('Client disconnected.'))
     })
   } catch (err) {
