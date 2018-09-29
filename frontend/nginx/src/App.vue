@@ -20,9 +20,15 @@ export default {
       user: window.localStorage.getItem('user')
     }
   },
+  mounted() {
+    if (this.user) {
+      this.login(this.user);
+    }
+  },
   methods: {
     onLogin(user) {
       window.localStorage.setItem('user', user);
+      this.login(user)
       this.user = user;
     }
   }
@@ -31,14 +37,18 @@ export default {
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'proxima-nova', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #555;
   box-sizing: border-box;
 }
 *, *:before, *:after {
   box-sizing: inherit;
 }
+
+body {
+  margin: 0;
+}
+
 </style>

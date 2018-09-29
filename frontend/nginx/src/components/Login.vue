@@ -1,8 +1,9 @@
 <template>
-  <div>
-    <h1>Login</h1>
-    <div class="flex">
-    <input ref="input" @keyup.enter="send" /> <button @click="send">Send</button>
+  <div class="container">
+    <h1>Moro!</h1>
+    <div>
+    <label for="login">Who are you?</label>
+    <input id="login" ref="input" @keyup.enter="send" /> <button @click="send">Go</button>
     </div>
   </div>
 </template>
@@ -26,6 +27,17 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+  }
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  label {
+    display: block;
+    font-size: small;
+    font-weight: bold;
   }
 
 </style>

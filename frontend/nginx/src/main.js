@@ -5,15 +5,33 @@ import { connect } from './chatservice'
 Vue.config.productionTip = false
 Vue.prototype.$ws = connect();
 
+const msgQueue = [];
+
+Vue.prototype.$ws.sendQueue = (msg) => {
+  if (Vue.prototype.$ws.readyState !== 1) {
+    msgQueue.push(msg);
+  } else {
+    Vue.prototype.$ws.send(msg);
+  }
+};
+
+Vue.prototype.$ws.addEventListener('open', () => {
+  msgQueue.forEach( msg => Vue.prototype.$ws.send(msg));
+});
+
+const filter = (event, listener) => ({data}) => {
+  const payload = JSON.parse(data)
+  if (payload.event === event) {
+      listener(payload.msg);
+  }
+}
+
 Vue.mixin({
   methods: {
-    sendToChat: msg => Vue.prototype.$ws.send(JSON.stringify({event: 'new-message', msg})),
-    listenToChat: listener => Vue.prototype.$ws.addEventListener('message', (msg) => {
-      const payload = JSON.parse(msg.data)
-      if (payload.event === 'new-message') {
-        listener(payload.msg);
-      }
-    }),
+    login: msg => Vue.prototype.$ws.sendQueue(JSON.stringify({event: 'login', msg})),
+    sendToChat: msg => Vue.prototype.$ws.sendQueue(JSON.stringify({event: 'new-message', msg})),
+    listenToChat: listener => Vue.prototype.$ws.addEventListener('message', filter('new-message',listener)),
+    listenToUsers: listener => Vue.prototype.$ws.addEventListener('message', filter('users', listener)),
     onWsStateChange: listener => {
       Vue.prototype.$ws.addEventListener('open', () => listener(false));
       Vue.prototype.$ws.addEventListener('close', () => listener(true));
