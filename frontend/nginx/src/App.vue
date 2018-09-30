@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <header>
+    <h1>Teahouse 🍵</h1>
+    </header>
     <login @login="onLogin" v-if="!user"/>
     <chat v-else :user="user"/>
   </div>
@@ -51,4 +54,25 @@ body {
   margin: 0;
 }
 
+header {
+    background-color: #f04e30;
+    padding: 3vh;
+    margin-bottom: 2vh;
+    color: white;
+  }
+ h1 {
+     font-weight: 200;
+     margin: 0;
+  }
+button {
+    border: none;
+    background-color: #e73b2b;
+    color: white;
+    padding: 1.5vh 1vw;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  button[disabled] {
+    background-color: #fad7d4;
+  }
 </style>

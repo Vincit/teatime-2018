@@ -1,9 +1,12 @@
 <template>
   <div class="container">
+    <div class="flex">
     <h1>Moro!</h1>
     <div>
-    <label for="login">Who are you?</label>
-    <input id="login" ref="input" @keyup.enter="send" /> <button @click="send">Go</button>
+    <label for="login">Nickname</label>
+    <input autofocus id="login" ref="input" @keyup.enter="send" />
+    </div>
+    <button @click="send">Go</button>
     </div>
   </div>
 </template>
@@ -25,19 +28,30 @@ export default {
 <style scoped>
   .flex {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    flex-direction: column;
   }
   .container {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    margin-top: 20vh;
   }
   label {
     display: block;
     font-size: small;
     font-weight: bold;
+    margin-top: 2vh;
+  }
+  input {
+    height: 2rem;
+    width: 20rem;
+  }
+
+  button {
+    width: 5vw;
+    align-self: flex-end;
+    margin-top: 1vh;
   }
 
 </style>

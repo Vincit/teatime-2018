@@ -1,29 +1,24 @@
 <template>
-  <div>
-    <header>
-    <h1>Teahouse 🍵</h1>
-    </header>
-    <div class="flex">
-      <div class="chat">
-        <ul class="chat-message-area">
-          <li :key="index" v-for="(message, index) in messages"> 
-            <h5>{{ message.user }} {{  message.timestamp | formatDate }}</h5>
-            <span>{{ message.msg }}</span>
-             </li>
-        </ul>
-        <div class="input-area">
-         <picker v-show="pickEmojiOpen" @select="addEmoji" :style="{ position: 'absolute', 'z-index': 10 }" />
-         <input ref="input" @keyup.enter="send" /> 
-         <span @click="openEmoji" class="open-emoji-picker">💩</span>
-         <button :disabled="disableInput" @click="send">Send</button>
-        </div>
+  <div class="flex">
+    <div class="chat">
+      <ul class="chat-message-area">
+        <li :key="index" v-for="(message, index) in messages"> 
+          <h5>{{ message.user }} {{  message.timestamp | formatDate }}</h5>
+          <span>{{ message.msg }}</span>
+            </li>
+      </ul>
+      <div class="input-area">
+        <picker v-show="pickEmojiOpen" @select="addEmoji" :style="{ position: 'absolute', bottom: '2vh', 'z-index': 10 }" />
+        <input ref="input" v-model.lazy.trim="inputValue" @keyup.enter="send" /> 
+        <span @click="openEmoji" class="open-emoji-picker">💩</span>
+        <button :disabled="disableInput" @click="send">Send</button>
       </div>
-      <div class="users">
-        <h2>Users</h2>
-        <ul>
-          <li :key="index" v-for="(user, index) in users"> {{ user }} </li>
-        </ul>
-      </div>
+    </div>
+    <div class="users">
+      <h2>Users</h2>
+      <ul>
+        <li :key="index" v-for="(user, index) in users"> {{ user }} </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -45,21 +40,26 @@ export default {
       messages: [],
       users: [],
       disableInput: false,
-      pickEmojiOpen: false
+      pickEmojiOpen: false,
+      inputValue: ''
     }
   },
   mounted() {  
     this.listenToChat(msg => this.messages.push(msg));
     this.onWsStateChange(closed => this.disableInput = closed);
     this.listenToUsers(msg => this.users = msg);
+    this.$refs.input.focus();
   },
   methods: {
     send() {
-      this.sendToChat(this.$refs.input.value)
-      this.$refs.input.value = '';
+      if (this.inputValue) {
+        this.sendToChat(this.inputValue)
+        this.inputValue = '';
+        this.$refs.input.value = '';
+      }
     },
     addEmoji(emoji){
-      this.$refs.input.value = this.$refs.input.value+emoji.native;
+      this.inputValue = this.inputValue+emoji.native;
       this.pickEmojiOpen = false;
     },
     openEmoji() {
@@ -90,45 +90,36 @@ export default {
     flex-direction: column;
     margin: 0;
     text-align: right;
-   
   }
 
   .chat-message-area {
-    height: 200px;
+    height: 72vh;
     overflow: hidden;
+    margin-bottom: 3vh;
   }
   
   .input-area {
     display: flex;
     justify-content: flex-end;
-    margin-top: 2rem;
-  }
-
-  button {
-    margin-left: 1rem;
-    border: none;
-    background-color: #e73b2b;
-    color: white;
-    padding: 12px 40px;
-    text-transform: uppercase;
-    cursor: pointer;
+    margin-bottom: 1vh;
   }
 
   input {
-    width: 40%;
-    font-size: 1.4rem;
+    width: 60%;
   }
 
   .chat {
-    width: 70%;
+    flex: 3;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    min-height: 100%;
   }
 
   .users {
-    width: 25%;
+    flex: 1;
     margin-left: 5%;
-    padding: 0 2rem;
+    padding-right: 2vw;
   }
 
   .users h2 {
@@ -141,24 +132,18 @@ export default {
     display: inline-block;
   }
 
-  h1 {
-     font-weight: 200;
-  }
 
   h5 {
     margin: 0.5rem 0 0 0;
   }
 
-  header {
-    background-color: #f04e30;
-    padding: 2rem;
-    margin-bottom: 1rem;
-    color: white;
+  button {
+    margin-left: 1rem;
   }
 
+
   .open-emoji-picker {
-    position: absolute;
-    margin-left: -126px;
+    margin-left: -25px;
     cursor: pointer;
   }
 
