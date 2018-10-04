@@ -16,7 +16,9 @@ Vue.prototype.$ws.sendQueue = (msg) => {
 };
 
 Vue.prototype.$ws.addEventListener('open', () => {
-  msgQueue.forEach( msg => Vue.prototype.$ws.send(msg));
+  while (msgQueue.length) {
+    Vue.prototype.$ws.send(msgQueue.shift())
+  }
 });
 
 const filter = (event, listener) => ({data}) => {
