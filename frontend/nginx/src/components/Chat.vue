@@ -106,6 +106,7 @@ export default {
 
   input {
     width: 60%;
+    font-size: 1.5rem
   }
 
   .chat {
@@ -120,6 +121,7 @@ export default {
     flex: 1;
     margin-left: 5%;
     padding-right: 2vw;
+    font-size: 2rem;
   }
 
   .users h2 {
@@ -135,6 +137,11 @@ export default {
 
   h5 {
     margin: 0.5rem 0 0 0;
+    font-size: 2rem;
+  }
+
+  .chat-message-area span {
+    font-size: 2rem;
   }
 
   button {

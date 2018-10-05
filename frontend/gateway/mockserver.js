@@ -17,7 +17,7 @@ const broadcast = (data) => {
 const handleMessage = (msg, socket) => {
   const payload = JSON.parse(msg);
   if (payload.event === 'new-message') {
-    payload.msg = {...{}, msg: payload.msg, user: socket.chatUser, timestamp: new Date().toISOString()};
+    payload.msg = { msg: payload.msg, user: socket.chatUser, timestamp: new Date().toISOString() };
     broadcast(payload)
   }
   if (payload.event === 'login') {
@@ -38,7 +38,7 @@ const handleMessage = (msg, socket) => {
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen(3000)
+    await fastify.listen(3001)
     fastify.log.info(`server listening on ${fastify.server.address().port}`)
     fastify.ws
     .on('connection', socket => {
