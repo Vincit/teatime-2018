@@ -6,62 +6,62 @@ fastify.register(require('fastify-ws'))
 
 const ReconnectingWebsocket = require('node-reconnect-ws');
 
-const chatServicePort = process.env.CHAT_SERVICE_PORT || '3001';
-const chatServiceHost = process.env.CHAT_SERVICE_HOST || 'localhost';
+const chatServicePort = process.env.CHAT_SERVICE_PORT || '8080';
+const chatServiceHost = process.env.CHAT_SERVICE_HOST || 'chatservice';
 
-const clients = {};
 let clientIdSequence = 0;
-let backendConnection = null;
+const backendConnection = {};
 const msgQueueMax = 20;
-const msgQueue = [];
+const msgQueue = {};
 
-const connectToBackend = () => {
-  const reconnectingWs = new ReconnectingWebsocket({ url: `ws://${chatServiceHost}:${chatServicePort}` });
+
+const handleMessageFromBackend = (socket) => (data) => {
+  try {
+    socket.send(data);
+  } catch (err) {
+    //connection problem between client <-> server
+  }
+}
+
+const connectToBackend = (clientId, socket) => {
+  const reconnectingWs = new ReconnectingWebsocket({ url: `ws://${chatServiceHost}/chat/${clientId}:${chatServicePort}` });
   reconnectingWs.on('error',() => fastify.log.warn('Lost connection to backend'))
   reconnectingWs.on('open',() => {
-    while (msgQueue.length) {
-      reconnectingWs.send(JSON.stringify(msgQueue.shift()));
+    while (msgQueue[clientId].length) {
+      reconnectingWs.send(JSON.stringify(msgQueue[clientId].shift()));
     }
   })
+  reconnectingWs.on('message', handleMessageFromBackend(socket));
   return reconnectingWs;
 }
 
-backendConnection = connectToBackend();
-
-const handleMessageFromBackend = (data) => {
-  const message = JSON.parse(data);
-  const clientId = message.clientId;
-  delete message.clientId
-  if (message.broadcast) {
-    broadcast(JSON.stringify(message))
-  } else {
-    clients[clientId].send(JSON.stringify(message))
+const sendToBackend = (msgObj, clientId, socket) => {
+  if (!backendConnection[clientId]) {
+    backendConnection[clientId] = connectToBackend(clientId, socket)
   }
-}
-backendConnection.on('message', handleMessageFromBackend);
-
-const sendToBackend = (msgObj) => {
-  if (backendConnection && backendConnection.ws.readyState === 1) {
-    backendConnection.send(JSON.stringify(msgObj))
+  if (backendConnection[clientId].ws.readyState === 1) {
+    backendConnection[clientId].send(JSON.stringify(msgObj))
   } else {
-    if (msgQueue.length > msgQueueMax) {
-      msgQueue.shift() //bye :(
+    if (!msgQueue[clientId]) {
+      msgQueue[clientId] = [];
     }
-    msgQueue.push(msgObj)
+    if (msgQueue[clientId] && msgQueue[clientId].length > msgQueueMax) {
+      msgQueue[clientId].shift() //bye :(
+    }
+    msgQueue[clientId].push(msgObj)
   }
 }
 
-const broadcast = (data) => {
-  fastify.ws.clients.forEach(function each(client) {
-    client.send(data);
-  });
-}
+['SIGINT', 'SIGTERM'].forEach(signal => {
+  process.once(signal, () => {
+    fastify.close();
+  })
+})
 
-const handleMessage = (clientId) => (rawMsg) => {
+const handleMessage = (clientId, socket) => (rawMsg) => {
   try {
     const msg = JSON.parse(rawMsg);
-    msg.clientId = clientId;
-    sendToBackend(msg)
+    sendToBackend(msg, clientId, socket)
   } catch (e) {
     //parse error, do nothing
   }
@@ -75,11 +75,16 @@ const start = async () => {
     .on('connection', socket => {
       fastify.log.info('Client connected.')
       const clientId = clientIdSequence++;
-      clients[clientId] = socket
-      socket.on('message', handleMessage(clientId)) 
+      socket.on('message', handleMessage(clientId, socket)) 
       socket.on('close', () => {
         fastify.log.info('Client disconnected.');
-        delete clients[clientId];
+        if (backendConnection[clientId]) {
+          backendConnection[clientId].close();
+          delete backendConnection[clientId];
+        }
+        if (msgQueue[clientId]) {
+          delete msgQueue[clientId]
+        }
       });
     })
   } catch (err) {
@@ -88,14 +93,8 @@ const start = async () => {
   }
 }
 
-fastify.get('/status', async (_request, reply) => {
-  if (!backendConnection || backendConnection.ws.readyState !== 1) { // no proper connection
-    reply
-    .code(500)
-    .send('Could not connect to backend')
-    return;
-  }
-  reply.send({ connections: Object.keys(clients), backendConnectionState: backendConnection.ws.readyState })
+fastify.get('/status', async () => {
+  return { connections:  Object.keys(backendConnection) };
 })
 
 start()

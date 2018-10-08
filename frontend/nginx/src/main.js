@@ -31,7 +31,7 @@ const filter = (event, listener) => ({data}) => {
 Vue.mixin({
   methods: {
     login: msg => Vue.prototype.$ws.sendQueue(JSON.stringify({event: 'login', msg})),
-    sendToChat: msg => Vue.prototype.$ws.sendQueue(JSON.stringify({event: 'new-message', msg})),
+    sendToChat: msg => Vue.prototype.$ws.sendQueue(JSON.stringify({event: 'new-message', msg, user: window.localStorage.getItem('user')})),
     listenToChat: listener => Vue.prototype.$ws.addEventListener('message', filter('new-message',listener)),
     listenToUsers: listener => Vue.prototype.$ws.addEventListener('message', filter('users', listener)),
     onWsStateChange: listener => {

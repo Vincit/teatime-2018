@@ -7,7 +7,6 @@ fastify.register(require('fastify-ws'))
 const users = [];
 
 const broadcast = (data) => {
-  data.broadcast = true;
   const stringified = JSON.stringify(data);
   fastify.ws.clients.forEach(function each(client) {
     client.send(stringified);
@@ -17,7 +16,7 @@ const broadcast = (data) => {
 const handleMessage = (msg, socket) => {
   const payload = JSON.parse(msg);
   if (payload.event === 'new-message') {
-    payload.msg = { msg: payload.msg, user: socket.chatUser, timestamp: new Date().toISOString() };
+    payload.msg = { msg: payload.msg, user: payload.user, timestamp: new Date().toISOString() };
     broadcast(payload)
   }
   if (payload.event === 'login') {
