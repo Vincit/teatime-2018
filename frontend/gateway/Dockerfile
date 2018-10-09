@@ -9,4 +9,4 @@ COPY . ./
 
 RUN npm install --ignore-scripts
 
-CMD [ "node", "mockserver" ]
+CMD [ "node", "gateway" ]
