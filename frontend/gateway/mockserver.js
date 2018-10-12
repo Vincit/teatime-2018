@@ -4,8 +4,6 @@ const fastify = require('fastify')({
 })
 fastify.register(require('fastify-ws'))
 
-const users = [];
-
 const broadcast = (data) => {
   const stringified = JSON.stringify(data);
   fastify.ws.clients.forEach(function each(client) {
@@ -13,18 +11,11 @@ const broadcast = (data) => {
   });
 }
 
-const handleMessage = (msg, socket) => {
+const handleMessage = (msg) => {
   const payload = JSON.parse(msg);
   if (payload.event === 'new-message') {
-    payload.msg = { msg: payload.msg, user: payload.user, timestamp: new Date().toISOString() };
+    payload.msg = { msg: payload.msg, sender: payload.user, timestamp: new Date().toISOString() };
     broadcast(payload)
-  }
-  if (payload.event === 'login') {
-    if (!users.includes(payload.msg)) {
-      users.push(payload.msg);
-    }
-    socket.chatUser = payload.msg;
-    broadcast({event: 'users', msg: users})
   }
 }
 
@@ -37,7 +28,7 @@ const handleMessage = (msg, socket) => {
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen(3001)
+    await fastify.listen(3000)
     fastify.log.info(`server listening on ${fastify.server.address().port}`)
     fastify.ws
     .on('connection', socket => {

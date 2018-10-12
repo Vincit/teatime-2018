@@ -10,45 +10,47 @@ const chatServicePort = process.env.CHAT_SERVICE_PORT || '8080';
 const chatServiceHost = process.env.CHAT_SERVICE_HOST || 'chatservice';
 
 let clientIdSequence = 0;
-const backendConnection = {};
-const msgQueueMax = 20;
-const msgQueue = {};
+const chatServiceConnections = {};
+const msgBufferMax = 20;
+const msgBuffer = {};
 
 
-const handleMessageFromBackend = (socket) => (data) => {
+const handleMessageFromChatService = (socket) => (data) => {
   try {
-    socket.send(data);
+    const dataObj = JSON.parse(data);
+    delete dataObj.id
+    socket.send(JSON.stringify(dataObj));
   } catch (err) {
     //connection problem between client <-> server
   }
 }
 
-const connectToBackend = (clientId, socket) => {
-  const reconnectingWs = new ReconnectingWebsocket({ url: `ws://${chatServiceHost}:${chatServicePort}/chat/${clientId}` });
+const connectToChatService = (clientId, user, socket) => {
+  const reconnectingWs = new ReconnectingWebsocket({ url: `ws://${chatServiceHost}:${chatServicePort}/chat/${user}` });
   reconnectingWs.on('error',() => fastify.log.warn('Lost connection to backend'))
   reconnectingWs.on('open',() => {
-    while (msgQueue[clientId].length) {
-      reconnectingWs.send(JSON.stringify(msgQueue[clientId].shift()));
+    while (msgBuffer[clientId].length) {
+      reconnectingWs.send(JSON.stringify(msgBuffer[clientId].shift()));
     }
   })
-  reconnectingWs.on('message', handleMessageFromBackend(socket));
+  reconnectingWs.on('message', handleMessageFromChatService(socket));
   return reconnectingWs;
 }
 
-const sendToBackend = (msgObj, clientId, socket) => {
-  if (!backendConnection[clientId]) {
-    backendConnection[clientId] = connectToBackend(clientId, socket)
+const sendToChatService = (msgObj, clientId, socket) => {
+  if (!chatServiceConnections[clientId]) {
+    chatServiceConnections[clientId] = connectToChatService(clientId, msgObj.user, socket)
   }
-  if (backendConnection[clientId].ws.readyState === 1) {
-    backendConnection[clientId].send(JSON.stringify(msgObj))
+  if (chatServiceConnections[clientId].ws.readyState === 1) {
+    chatServiceConnections[clientId].send(msgObj.msg)
   } else {
-    if (!msgQueue[clientId]) {
-      msgQueue[clientId] = [];
+    if (!msgBuffer[clientId]) {
+      msgBuffer[clientId] = [];
     }
-    if (msgQueue[clientId] && msgQueue[clientId].length > msgQueueMax) {
-      msgQueue[clientId].shift() //bye :(
+    if (msgBuffer[clientId] && msgBuffer[clientId].length > msgBufferMax) {
+      msgBuffer[clientId].shift() //bye :(
     }
-    msgQueue[clientId].push(msgObj)
+    msgBuffer[clientId].push(msgObj)
   }
 }
 
@@ -61,7 +63,9 @@ const sendToBackend = (msgObj, clientId, socket) => {
 const handleMessage = (clientId, socket) => (rawMsg) => {
   try {
     const msg = JSON.parse(rawMsg);
-    sendToBackend(msg, clientId, socket)
+    if (msg.event === 'new-msg') {
+      sendToChatService(msg, clientId, socket)
+    }
   } catch (e) {
     //parse error, do nothing
   }
@@ -78,12 +82,12 @@ const start = async () => {
       socket.on('message', handleMessage(clientId, socket)) 
       socket.on('close', () => {
         fastify.log.info('Client disconnected.');
-        if (backendConnection[clientId]) {
-          backendConnection[clientId].close();
-          delete backendConnection[clientId];
+        if (chatServiceConnections[clientId]) {
+          chatServiceConnections[clientId].close();
+          delete chatServiceConnections[clientId];
         }
-        if (msgQueue[clientId]) {
-          delete msgQueue[clientId]
+        if (msgBuffer[clientId]) {
+          delete msgBuffer[clientId]
         }
       });
     })
@@ -94,7 +98,7 @@ const start = async () => {
 }
 
 fastify.get('/status', async () => {
-  return { connections:  Object.keys(backendConnection) };
+  return { connections:  Object.keys(chatServiceConnections) };
 })
 
 start()
