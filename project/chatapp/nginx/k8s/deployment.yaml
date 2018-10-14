@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: tea
+  name: chatapp-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatapp-nginx
+  template:
+    metadata:
+      labels:
+        app: chatapp-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: IMAGE_REF
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 5
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 5
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+
