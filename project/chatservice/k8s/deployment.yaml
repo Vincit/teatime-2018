@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: chatservice
-          image: gcr.io/vincit-teatime/2018-chatservice:latest
+          image: IMAGE_REF
           ports:
             - containerPort: 8080
           resources:
