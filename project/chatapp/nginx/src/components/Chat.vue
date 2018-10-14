@@ -3,7 +3,7 @@
     <div class="chat">
       <ul class="chat-message-area">
         <li :key="index" v-for="(message, index) in messages"> 
-          <h5>{{ message.user }} {{  message.timestamp | formatDate }}</h5>
+          <h5>{{ message.sender }} {{  message.timestamp | formatDate }}</h5>
           <span>{{ message.msg }}</span>
             </li>
       </ul>
@@ -14,12 +14,6 @@
         <button :disabled="disableInput" @click="send">Send</button>
       </div>
     </div>
-    <div class="users">
-      <h2>Users</h2>
-      <ul>
-        <li :key="index" v-for="(user, index) in users"> {{ user }} </li>
-      </ul>
-    </div>
   </div>
 </template>
 
@@ -29,16 +23,12 @@ import format from 'date-fns/format'
 import { Picker } from 'emoji-mart-vue'
 
 export default {
-  props: {
-    user: String
-  },
   components: {
     Picker
   },
   data() {
     return {
       messages: [],
-      users: [],
       disableInput: false,
       pickEmojiOpen: false,
       inputValue: ''
@@ -47,7 +37,6 @@ export default {
   mounted() {  
     this.listenToChat(msg => this.messages.push(msg));
     this.onWsStateChange(closed => this.disableInput = closed);
-    this.listenToUsers(msg => this.users = msg);
     this.$refs.input.focus();
   },
   methods: {
@@ -110,24 +99,12 @@ export default {
   }
 
   .chat {
-    flex: 3;
+    flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
     min-height: 100%;
-  }
-
-  .users {
-    flex: 1;
-    margin-left: 5%;
-    padding-right: 2vw;
-    font-size: 2rem;
-  }
-
-  .users h2 {
-    margin-top: 0;
-    font-weight: 200;
-    color: #555;
+    margin-right: 5rem;
   }
 
   li {
