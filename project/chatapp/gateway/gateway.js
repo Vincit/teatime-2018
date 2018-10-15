@@ -22,7 +22,6 @@ const handleMessageFromChatService = (socket) => (data) => {
     socket.send(JSON.stringify(dataObj));
   } catch (err) {
     //connection problem between client <-> server
-    fastify.log.warn('Conn error: ' + err);
   }
 }
 
