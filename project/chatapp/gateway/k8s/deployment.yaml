@@ -26,4 +26,17 @@ spec:
             requests:
               cpu: 50m
               memory: 64Mi
-          # TODO: add probes
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 3000
+            periodSeconds: 5
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 3000
+            periodSeconds: 5
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
