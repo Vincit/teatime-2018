@@ -12,7 +12,7 @@ LABEL maintainer="https://github.com/Vincit"
 
 EXPOSE 8080
 
-COPY --from=builder --chown=nobody:nobody /home/gradle/project/build/libs/*-all.jar /chatservice.jar
+COPY --from=builder /home/gradle/project/build/libs/*-all.jar /chatservice.jar
 
 USER nobody
 
