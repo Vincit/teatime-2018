@@ -29,6 +29,7 @@ const connectToChatService = (clientId, user, socket) => {
   const reconnectingWs = new ReconnectingWebsocket({ url: `ws://${chatServiceHost}:${chatServicePort}/chat/${user}` });
   reconnectingWs.on('error',() => fastify.log.warn('Lost connection to backend'))
   reconnectingWs.on('open',() => {
+    fastify.log.info('Connection open');
     while (msgBuffer[clientId].length) {
       reconnectingWs.send(JSON.stringify(msgBuffer[clientId].shift()));
     }
