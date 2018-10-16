@@ -63,7 +63,8 @@ const sendToChatService = (msgObj, clientId, socket) => {
 const handleMessage = (clientId, socket) => (rawMsg) => {
   try {
     const msg = JSON.parse(rawMsg);
-    if (msg.event === 'new-msg') {
+    fastify.log.info(`Got msg ${rawMsg}`)
+    if (msg.event === 'new-message') {
       sendToChatService(msg, clientId, socket)
     }
   } catch (e) {
