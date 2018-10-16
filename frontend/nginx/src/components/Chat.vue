@@ -4,7 +4,7 @@
       <ul class="chat-message-area">
         <li :key="index" v-for="(message, index) in messages"> 
           <h5>{{ message.sender }} {{  message.timestamp | formatDate }}</h5>
-          <span>{{ message.msg }}</span>
+          <span>{{ message.message }}</span>
             </li>
       </ul>
       <div class="input-area">
