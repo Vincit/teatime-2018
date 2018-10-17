@@ -24,7 +24,7 @@ Vue.prototype.$ws.addEventListener('open', () => {
 const filter = (event, listener) => ({data}) => {
   const payload = JSON.parse(data)
   if (payload.event === event) {
-      listener(payload.msg);
+      listener(payload.content);
   }
 }
 

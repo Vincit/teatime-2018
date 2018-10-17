@@ -19,7 +19,7 @@ const handleMessageFromChatService = (socket) => (data) => {
   try {
     const dataObj = JSON.parse(data);
     delete dataObj.id
-    socket.send(JSON.stringify(dataObj));
+    socket.send(JSON.stringify({event: 'new-message', content: dataObj}));
   } catch (err) {
     //connection problem between client <-> server
   }
@@ -42,7 +42,7 @@ const sendToChatService = (msgObj, clientId, socket) => {
     chatServiceConnections[clientId] = connectToChatService(clientId, msgObj.user, socket)
   }
   if (chatServiceConnections[clientId].ws.readyState === 1) {
-    chatServiceConnections[clientId].send(msgObj.msg)
+    chatServiceConnections[clientId].send(msgObj.message)
   } else {
     if (!msgBuffer[clientId]) {
       msgBuffer[clientId] = [];
@@ -50,7 +50,7 @@ const sendToChatService = (msgObj, clientId, socket) => {
     if (msgBuffer[clientId] && msgBuffer[clientId].length > msgBufferMax) {
       msgBuffer[clientId].shift() //bye :(
     }
-    msgBuffer[clientId].push(msgObj)
+    msgBuffer[clientId].push(msgObj.message)
   }
 }
 
