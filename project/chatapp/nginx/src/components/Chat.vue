@@ -10,7 +10,7 @@
       <div class="input-area">
         <picker v-show="pickEmojiOpen" @select="addEmoji" :style="{ position: 'absolute', bottom: '2vh', 'z-index': 10 }" />
         <input ref="input" v-model.lazy.trim="inputValue" @keyup.enter="send" /> 
-        <span @click="openEmoji" class="open-emoji-picker">💩</span>
+        <span @click="openEmojiPicker" class="open-emoji-picker">💩</span>
         <button :disabled="disableInput" @click="send">Send</button>
       </div>
     </div>
@@ -51,7 +51,7 @@ export default {
       this.inputValue = this.inputValue+emoji.native;
       this.pickEmojiOpen = false;
     },
-    openEmoji() {
+    openEmojiPicker() {
       this.pickEmojiOpen = true;
     }
   },
