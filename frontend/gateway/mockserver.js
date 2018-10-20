@@ -14,7 +14,7 @@ const broadcast = (data) => {
 const handleMessage = (msg) => {
   const payload = JSON.parse(msg);
   if (payload.event === 'new-message') {
-    payload.msg = { msg: payload.msg, sender: payload.user, timestamp: new Date().toISOString() };
+    payload.content = { message: payload.message, sender: payload.user, dateTime: new Date().toISOString() };
     broadcast(payload)
   }
 }

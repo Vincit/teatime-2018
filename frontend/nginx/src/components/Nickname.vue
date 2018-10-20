@@ -3,8 +3,8 @@
     <div class="flex">
     <h1>Moro!</h1>
     <div>
-    <label for="login">Nickname</label>
-    <input autofocus id="login" ref="input" @keyup.enter="send" />
+    <label for="nickname">Nickname</label>
+    <input autofocus id="nickname" ref="input" @keyup.enter="send" />
     </div>
     <button @click="send">Go</button>
     </div>
@@ -13,12 +13,9 @@
 
 <script>
 export default {
-  props: {
-    value: String
-  },
   methods: {
     send() {
-      this.$emit('login', this.$refs.input.value);
+      this.$emit('nickname', this.$refs.input.value);
     }
   }
 }
@@ -47,7 +44,6 @@ export default {
     height: 2rem;
     width: 20rem;
   }
-
   button {
     width: 5vw;
     align-self: flex-end;

@@ -8,7 +8,7 @@ Vue.prototype.$ws = connect();
 const msgBuffer = [];
 
 Vue.prototype.$ws.sendQueue = (msg) => {
-  if (Vue.prototype.$ws.readyState !== 1) {
+  if (Vue.prototype.$ws.readyState !== 1) {  // ws connection not open
     msgBuffer.push(msg);
   } else {
     Vue.prototype.$ws.send(msg);
@@ -30,8 +30,7 @@ const filter = (event, listener) => ({data}) => {
 
 Vue.mixin({
   methods: {
-    login: msg => Vue.prototype.$ws.sendQueue(JSON.stringify({event: 'login', msg})),
-    sendToChat: message => Vue.prototype.$ws.sendQueue(JSON.stringify({event: 'new-message', message, user: window.localStorage.getItem('user')})),
+    sendToChat: message => Vue.prototype.$ws.sendQueue(JSON.stringify({event: 'new-message', message, user: window.localStorage.getItem('nick')})),
     listenToChat: listener => Vue.prototype.$ws.addEventListener('message', filter('new-message',listener)),
     onWsStateChange: listener => {
       Vue.prototype.$ws.addEventListener('open', () => listener(false));
