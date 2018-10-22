@@ -3,36 +3,30 @@
     <header>
     <h1>Teahouse 🍵</h1>
     </header>
-    <login @login="onLogin" v-if="!user"/>
-    <chat v-else :user="user"/>
+    <nickname @nickname="onNicknameGiven" v-if="!nick"/>
+    <chat v-else/>
   </div>
 </template>
 
 <script>
 import Chat from './components/Chat.vue'
-import Login from './components/Login.vue'
+import Nickname from './components/Nickname.vue'
 
 export default {
   name: 'app',
   components: {
     Chat,
-    Login
+    Nickname
   },
   data() {
     return {
-      user: window.localStorage.getItem('user')
-    }
-  },
-  mounted() {
-    if (this.user) {
-      this.login(this.user);
+      nick: window.localStorage.getItem('nick')
     }
   },
   methods: {
-    onLogin(user) {
-      window.localStorage.setItem('user', user);
-      this.login(user)
-      this.user = user;
+    onNicknameGiven(nick) {
+      window.localStorage.setItem('nick', nick);
+      this.nick = nick;
     }
   }
 }
@@ -53,17 +47,16 @@ export default {
 body {
   margin: 0;
 }
-
 header {
     background-color: #f04e30;
     padding: 3vh;
     margin-bottom: 2vh;
     color: white;
-  }
- h1 {
-     font-weight: 200;
-     margin: 0;
-  }
+}
+h1 {
+    font-weight: 200;
+    margin: 0;
+}
 button {
     border: none;
     background-color: #e73b2b;
@@ -71,8 +64,23 @@ button {
     padding: 1.5vh 1vw;
     text-transform: uppercase;
     cursor: pointer;
+}
+button[disabled] {
+  background-color: #fad7d4;
+}
+ul {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    margin: 0;
+    text-align: right;
   }
-  button[disabled] {
-    background-color: #fad7d4;
+  li {
+    display: inline-block;
   }
+  h5 {
+    margin: 0.5rem 0 0 0;
+    font-size: 2rem;
+  }
+
 </style>
