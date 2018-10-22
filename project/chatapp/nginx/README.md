@@ -1,4 +1,4 @@
-# teatime-chat
+# Chatapp
 
 ## Project setup
 ```

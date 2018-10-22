@@ -5,3 +5,4 @@ dist
 README.MD
 vue.config.js
 gateway
+k8s
