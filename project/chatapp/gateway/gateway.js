@@ -102,8 +102,4 @@ fastify.get('/status', async () => {
   return { connections:  Object.keys(chatServiceConnections) };
 })
 
-<<<<<<< HEAD:project/chatapp/gateway/gateway.js
-start()
-=======
 start();
->>>>>>> origin/cloud-build:frontend/gateway/gateway.js
