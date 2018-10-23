@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: chatservice
+---
+testFramework: spock
+sourceLanguage: groovy

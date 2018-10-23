@@ -1,0 +1,15 @@
+micronaut:
+  server:
+    port: 8080
+  application:
+    name: chatservice
+
+mongodb:
+  dbname: chatdb
+  ssl: false
+  uri: mongodb://127.0.0.1:27017/chatdb
+
+jackson:
+  dateFormat: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+  serialization:
+    writeDatesAsTimestamps: false

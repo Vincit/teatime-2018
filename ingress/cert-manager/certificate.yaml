@@ -1,0 +1,17 @@
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: lb-crt
+  namespace: tea
+spec:
+  secretName: lb-tls
+  issuerRef:
+    name: lets-prod
+  commonName: ${DNS_DOMAIN_NAME}
+  acme:
+    config:
+      - http01:
+          ingressClass: nginx
+        domains:
+          - ${DNS_DOMAIN_NAME}

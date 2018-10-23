@@ -1,0 +1,203 @@
+<html lang="en" class="gr__localhost">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <title>teatime-chat</title>
+  <link href="/app.js" rel="preload" as="script">
+  <style type="text/css">
+    .chat[data-v-2bc3d388] {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-flex: 1;
+      -ms-flex: 1;
+      flex: 1;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      height: 100%;
+      min-height: 100%;
+      margin-right: 5rem;
+    }
+
+    .input-container[data-v-2bc3d388] {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: end;
+      -ms-flex-pack: end;
+      justify-content: flex-end;
+      margin-bottom: 1vh;
+    }
+
+    input[data-v-2bc3d388] {
+      width: 60%;
+      font-size: 1.5rem
+    }
+
+    .messages[data-v-2bc3d388] {
+      height: 72vh;
+      overflow: hidden;
+      margin-bottom: 3vh;
+    }
+
+    .messages span[data-v-2bc3d388] {
+      font-size: 2rem;
+    }
+
+    button[data-v-2bc3d388] {
+      margin-left: 1rem;
+    }
+
+    .open-emoji-picker[data-v-2bc3d388] {
+      margin-left: -25px;
+      cursor: pointer;
+    }
+  </style>
+  <style type="text/css">
+    .flex[data-v-66a8e19e] {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+    }
+
+    .container[data-v-66a8e19e] {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      margin-top: 20vh;
+    }
+
+    label[data-v-66a8e19e] {
+      display: block;
+      font-size: small;
+      font-weight: bold;
+      margin-top: 2vh;
+    }
+
+    input[data-v-66a8e19e] {
+      height: 2rem;
+      width: 20rem;
+    }
+
+    button[data-v-66a8e19e] {
+      width: 5vw;
+      -ms-flex-item-align: end;
+      align-self: flex-end;
+      margin-top: 1vh;
+    }
+  </style>
+  <style type="text/css">
+    #app {
+      font-family: 'proxima-nova', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      color: #555;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    *,
+    *:before,
+    *:after {
+      -webkit-box-sizing: inherit;
+      box-sizing: inherit;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    header {
+      background-color: #f04e30;
+      padding: 3vh;
+      margin-bottom: 2vh;
+      color: white;
+    }
+
+    h1 {
+      font-weight: 200;
+      margin: 0;
+    }
+
+    button {
+      border: none;
+      background-color: #e73b2b;
+      color: white;
+      padding: 1.5vh 1vw;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    button[disabled] {
+      background-color: #fad7d4;
+    }
+
+    ul {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: end;
+      -ms-flex-pack: end;
+      justify-content: flex-end;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      margin: 0;
+      text-align: right;
+    }
+
+    li {
+      display: inline-block;
+    }
+
+    h5 {
+      margin: 0.5rem 0 0 0;
+      font-size: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <h1>Teahouse 🍵</h1>
+    </header>
+    <div class="chat">
+      <ul class="messages">
+        <li>
+          <h5>Juho 15:16</h5>
+          <span>Moi!</span>
+        </li>
+        <li>
+          <h5>Juho 15:16</h5>
+          <span>Onko täällä ketään?</span>
+        </li>
+      </ul>
+      <div class="input-container">
+        <input />
+        <button>Send</button></div>
+    </div>
+  </div>
+</body>
+
+</html>
