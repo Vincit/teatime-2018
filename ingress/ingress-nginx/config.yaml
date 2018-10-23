@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+data:
+  server-tokens: "false" # Hide Nginx version in e.g. 4xx error pages
+  use-proxy-protocol: "false" # GCE network LB is passthrough (non-proxying)
+  use-forwarded-headers: "false" # GCE network LB is passthrough (non-proxying)
