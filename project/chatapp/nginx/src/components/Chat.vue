@@ -6,7 +6,7 @@
         <span>{{ message.message }}</span>
           </li>
     </ul>
-    <div class="input-container">
+    <div v-if="showInputArea" class="input-container">
       <picker v-show="pickEmojiOpen" @select="addEmoji" :style="{ position: 'absolute', bottom: '2vh', 'z-index': 10 }" />
       <input ref="input" v-model.lazy.trim="inputValue" @keyup.enter="send" /> 
       <span @click="openEmojiPicker" class="open-emoji-picker">💩</span>
@@ -29,13 +29,18 @@ export default {
       messages: [],
       disableInput: false,
       pickEmojiOpen: false,
-      inputValue: ''
+      inputValue: '',
+      showInputArea: true
     }
   },
   mounted() {  
     this.listenToChat(msg => this.messages.push(msg));
     this.onWsStateChange(closed => this.disableInput = closed);
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+      this.showInputArea = false;
+    }
     this.$refs.input.focus();
+  
   },
   methods: {
     send() {
