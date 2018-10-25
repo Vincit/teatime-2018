@@ -18,7 +18,7 @@ git clone https://github.com/Vincit/teatime-2018.git
     - Monitoring Viewer
     - Storage Object Viewer
 
-3. Create a custom-mode VPC network and subnetwork in the selected region (later referenced by `VPC_NETWORK` and `VPC_SUBNETWORK`)
+3. Create a custom-mode VPC network and subnetwork in the selected region (referenced by `VPC_NETWORK` and `VPC_SUBNETWORK`, respectively)
 
 4. Allocate a static, regional external IPv4 address for the network load balancer (referenced by `LB_IP_ADDRESS`)
 
@@ -26,7 +26,7 @@ git clone https://github.com/Vincit/teatime-2018.git
 
 6. Run a MongoDB replica set, using e.g. [GCP marketplace](https://console.cloud.google.com/marketplace/browse?q=MongoDB) or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 
-7. Optional: create a Cloud NAT gateway if you need Internet access from Kubernetes (e.g. for MongoDB Atlas)
+7. Optional: create a Cloud NAT gateway if you need Internet access from Kubernetes pods (e.g. for MongoDB Atlas)
 
 ### Set variables for your environment
 
@@ -50,7 +50,7 @@ export \
 
 ### Create cluster
 
-NOTE: For brevity, we apply many, but not all, security hardenings here. See https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster for additional considerations (e.g. network policy).
+NOTE: For brevity, we apply many, but definitely not all, security hardenings here. See https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster for additional considerations (e.g. network policy).
 
 ```
 gcloud container --project "$GCP_PROJECT_ID" clusters create "$GKE_CLUSTER_NAME" \
