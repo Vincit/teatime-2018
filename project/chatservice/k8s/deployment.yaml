@@ -14,6 +14,10 @@ spec:
       labels:
         app: chatservice
     spec:
+      volumes:
+        - name: micronaut-config
+          secret:
+            secretName: micronaut-config
       containers:
         - name: chatservice
           image: IMAGE_REF
@@ -40,16 +44,12 @@ spec:
             periodSeconds: 5
             initialDelaySeconds: 15
             timeoutSeconds: 3
+          volumeMounts:
+            - name: micronaut-config
+              mountPath: "/etc/micronaut"
+              readOnly: true
           env:
-            - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: mongo-secrets
-                  key: MONGODB_URI
-            - name: MONGODB_SSL
-              value: "true"
-            - name: MONGODB_DBNAME
-              value: "chat"
             - name: _JAVA_OPTIONS
               value: "-Xss256K -Xmx192M -Xms64M -XX:MaxRAM=256M -XX:MaxMetaspaceSize=64M"
-
+            - name: MICRONAUT_CONFIG_FILES
+              value: /etc/micronaut/mongo.yml

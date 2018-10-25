@@ -1,6 +1,6 @@
 # Vincit teatime 2018
 
-## Clone the repo
+## Clone the repository
 
 ```
 git clone https://github.com/Vincit/teatime-2018.git
@@ -10,21 +10,25 @@ git clone https://github.com/Vincit/teatime-2018.git
 
 ### Pre-requisites
 
-1. Create a GCP project (later referenced as `GCP_PROJECT_ID`) and choose a region (later `GCP_REGION`)
+1. Create a GCP project (referenced by `GCP_PROJECT_ID` below) and choose a region (referenced by `GCP_REGION`)
 
-2. Create a service account for Kubernetes worker nodes (later referenced as `GKE_NODE_SERVICE_ACCOUNT`), with IAM roles:
+2. Create a service account for Kubernetes worker nodes (account email address referenced by `GKE_NODE_SERVICE_ACCOUNT` below), with IAM roles:
     - Logs Writer
     - Monitoring Metric Writer
     - Monitoring Viewer
     - Storage Object Viewer
 
-3. Allocate a static, regional external IP for the network load balancer (later referenced as `LB_IP_ADDRESS`)
+3. Create a custom-mode VPC network and subnetwork in the selected region (referenced by `VPC_NETWORK` and `VPC_SUBNETWORK`, respectively)
 
-4. Point a DNS name (A-record) to the load balancer IP address (later referenced as `DNS_DOMAIN_NAME`)
+4. Allocate a static, regional external IPv4 address for the network load balancer (referenced by `LB_IP_ADDRESS`)
 
-5. Run a MongoDB replica set using e.g. [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+5. Point a DNS name (A-record) to the load balancer IP address (referenced by `DNS_DOMAIN_NAME`)
 
-### Set some variables
+6. Run a MongoDB replica set, using e.g. [GCP marketplace](https://console.cloud.google.com/marketplace/browse?q=MongoDB) or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+
+7. Optional: create a Cloud NAT gateway if you need Internet access from Kubernetes pods (e.g. for MongoDB Atlas)
+
+### Set variables for your environment
 
 NOTE: you may want to restrict `kubectl` and application HTTP(S) access by adjusting `GKE_MASTER_IP_WHITELIST` and `APP_IP_WHITELIST`, respectively.
 
@@ -46,7 +50,7 @@ export \
 
 ### Create cluster
 
-NOTE: We apply many, but not all, security hardenings here. See https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster for additional considerations (e.g. network policy).
+NOTE: For brevity, we apply many, but definitely not all, security hardenings here. See https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster for additional considerations (e.g. network policy).
 
 ```
 gcloud container --project "$GCP_PROJECT_ID" clusters create "$GKE_CLUSTER_NAME" \
@@ -73,7 +77,7 @@ gcloud container --project "$GCP_PROJECT_ID" clusters create "$GKE_CLUSTER_NAME"
 ### Configure cluster
 
 - Point kubectl to the cluster: `gcloud container clusters get-credentials $GKE_CLUSTER_NAME --region $GCP_REGION`
-- Check worker nodes are okay: `kubectl get nodes`
+- Check that worker nodes are okay: `kubectl get nodes`
 - Create application namespace: `kubectl create namespace tea`
 - Allow self to manage cluster: `kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user="$(gcloud config get-value account)"`
 
@@ -89,16 +93,23 @@ NOTE: cert-manager is currently in beta!
 
 - Install: `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.20.0/deploy/mandatory.yaml`
 - Configure for GCP: `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.20.0/deploy/provider/cloud-generic.yaml`
-- Harden configuration: `kubectl apply -f ingress/ingress-nginx/config.yaml`
-- Reconfigure network LB: `envsubst < ingress/ingress-nginx/service.yaml | kubectl apply -f -`
-- Configure ingress: `envsubst < ingress/ingress-nginx/ingress.yaml | kubectl apply -f -`
+- Harden nginx configuration: `kubectl apply -f ingress/ingress-nginx/config.yaml`
+- Configure network LB: `envsubst < ingress/ingress-nginx/service.yaml | kubectl apply -f -`
+- Configure ingress routes: `envsubst < ingress/ingress-nginx/ingress.yaml | kubectl apply -f -`
 - Scale up: `kubectl -n ingress-nginx scale deployment nginx-ingress-controller --replicas=3`
 
-### Add secret for MongoDB
+### Configure MongoDB secret
+
+Create configuration file `mongo.yml`:
 
 ```
-kubectl -n tea create secret generic mongo-secrets --from-literal=MONGODB_URI="mongodb+srv://<username>:<password>@<host>/<db>?retryWrites=true&streamType=netty"
+mongodb:
+  dbname: <db>
+  ssl: <true or false>
+  uri: mongodb+srv://<username>:<password>@<host>/<db>?retryWrites=true&streamType=netty
 ```
+
+Create Kubernetes secret: `kubectl -n tea create secret generic micronaut-config --from-file=mongo.yml`
 
 ## Cloud build setup
 
