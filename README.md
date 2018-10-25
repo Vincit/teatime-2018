@@ -8,6 +8,22 @@ git clone https://github.com/Vincit/teatime-2018.git
 
 ## GKE cluster setup
 
+### Pre-requisites
+
+1. Create a GCP project (later referenced as `GCP_PROJECT_ID`) and choose a region (later `GCP_REGION`)
+
+2. Create a service account for Kubernetes worker nodes (later referenced as `GKE_NODE_SERVICE_ACCOUNT`), with IAM roles:
+    - Logs Writer
+    - Monitoring Metric Writer
+    - Monitoring Viewer
+    - Storage Object Viewer
+
+3. Allocate a static, regional external IP for the network load balancer (later referenced as `LB_IP_ADDRESS`)
+
+4. Point a DNS name (A-record) to the load balancer IP address (later referenced as `DNS_DOMAIN_NAME`)
+
+5. Run a MongoDB replica set using e.g. [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+
 ### Set some variables
 
 NOTE: you may want to restrict `kubectl` and application HTTP(S) access by adjusting `GKE_MASTER_IP_WHITELIST` and `APP_IP_WHITELIST`, respectively.
@@ -83,3 +99,7 @@ NOTE: cert-manager is currently in beta!
 ```
 kubectl -n tea create secret generic mongo-secrets --from-literal=MONGODB_URI="mongodb+srv://<username>:<password>@<host>/<db>?retryWrites=true&streamType=netty"
 ```
+
+## Cloud build setup
+
+TODO: document this
