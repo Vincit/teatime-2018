@@ -32,6 +32,8 @@ git clone https://github.com/Vincit/teatime-2018.git
 
 NOTE: you may want to restrict `kubectl` and application HTTP(S) access by adjusting `GKE_MASTER_IP_WHITELIST` and `APP_IP_WHITELIST`, respectively.
 
+NOTE: Cloud Build machine public IP ranges are not currently published/readily whitelistable for GKE master (kubectl) access: https://stackoverflow.com/questions/51944817/google-cloud-build-deploy-to-gke-private-cluster 
+
 ```
 export \
   GCP_PROJECT_ID="" \
@@ -51,6 +53,8 @@ export \
 ### Create cluster
 
 NOTE: For brevity, we apply many, but definitely not all, security hardenings here. See https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster for additional considerations (e.g. network policy).
+
+NOTE: `--num-nodes` means num nodes per zone
 
 ```
 gcloud container --project "$GCP_PROJECT_ID" clusters create "$GKE_CLUSTER_NAME" \
@@ -83,7 +87,7 @@ gcloud container --project "$GCP_PROJECT_ID" clusters create "$GKE_CLUSTER_NAME"
 
 ### Configure cert-manager
 
-NOTE: cert-manager is currently in beta!
+NOTE: cert-manager is currently in beta (pre-1.0 release)!
 
 - Install cert-manager: `kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/v0.5.0/contrib/manifests/cert-manager/with-rbac.yaml`
 - Configure Let's Encrypt issuer: `envsubst < ingress/cert-manager/issuer.yaml | kubectl apply -f -`
@@ -113,4 +117,4 @@ Create Kubernetes secret: `kubectl -n tea create secret generic micronaut-config
 
 ## Cloud build setup
 
-TODO: document this
+TODO: document this as soon as Google makes Cloud Build scriptable via `gcloud`
